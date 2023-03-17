@@ -111,6 +111,10 @@ button {
   text-decoration: none;
 }
 
+.hidden {
+  display: none;
+}
+
 /* Search Form */
 
 .SearchBox-input::placeholder {

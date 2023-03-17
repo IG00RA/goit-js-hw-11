@@ -7,18 +7,32 @@ import { fetchImages } from './js/fetchImages';
 const refs = {
   form: document.getElementById('search-form'),
   gallery: document.querySelector('.gallery'),
+  button: document.querySelector('.load-more'),
+  text: document.querySelector('.end-list'),
+};
+const HITS_PER_PAGE = 40;
+let userInput = '';
+let page = 1;
+let totalPages = HITS_PER_PAGE;
+let gallery = '';
+
+const loadMoreImgs = () => {
+  page += 1;
+  totalPages += HITS_PER_PAGE;
+  gallery.refresh();
+  fetchImages(userInput, render, page);
 };
 
-let userInput = '';
-
 refs.form.addEventListener('submit', handleSubmit);
+refs.button.addEventListener('click', loadMoreImgs);
 
 function handleSubmit(e) {
   e.preventDefault();
   const { value } = e.target.elements.searchQuery;
   userInput = value.trim();
   if (userInput.length > 0) {
-    fetchImages(userInput, render);
+    page = 1;
+    fetchImages(userInput, render, page);
   }
   if (userInput.length < 1) {
     Notify.failure('Oops, please enter your request');
@@ -27,7 +41,20 @@ function handleSubmit(e) {
 }
 
 function render(data) {
-  console.log(data.hits);
+  if (page === 1) {
+    Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  }
+
+  if (totalPages >= data.totalHits) {
+    refs.button.classList.add('hidden');
+    refs.text.classList.remove('hidden');
+  }
+  if (data.hits.length < 1) {
+    return Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
+
   const item = data.hits
     .map(
       ({
@@ -67,7 +94,20 @@ function render(data) {
                   `
     )
     .join('');
-  refs.gallery.innerHTML = '';
   refs.gallery.insertAdjacentHTML('beforeend', item);
-  new SimpleLightbox('.gallery a', { download: true, captionDelay: 250 });
+  gallery = new SimpleLightbox('.gallery a', {
+    download: true,
+    captionDelay: 250,
+  });
+  if (page > 1) {
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+  }
+  refs.button.classList.remove('hidden');
 }
