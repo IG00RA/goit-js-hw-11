@@ -22,6 +22,7 @@ body {
   background-color: var(--body-color);
   font-family: var(--main-font), Arial;
   font-weight: var(--font-regular);
+  margin-top: 0;
 }
 
 input,
@@ -47,6 +48,7 @@ button {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 60px;
+  margin-top: 70px;
 }
 
 .photo-card {
@@ -89,6 +91,7 @@ button {
   gap: 10px;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .load-more {
@@ -112,7 +115,16 @@ button {
 }
 
 .hidden {
-  display: none;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+
+  white-space: nowrap;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
 }
 
 /* Search Form */
@@ -179,4 +191,15 @@ button {
   .SearchBox:hover .SearchBox-input {
     width: 500px;
   }
+}
+.search-wrap {
+  width: 100%;
+  height: 67px;
+  background-color: #0000007a;
+  position: fixed;
+  z-index: 1;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
 }

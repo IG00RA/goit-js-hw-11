@@ -1,18 +1,12 @@
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
-export function fetchImages(userInput, render, page) {
-  fetch(
-    `https://pixabay.com/api/?key=34434498-1935a5c1deda7e012c81c56f8&q=${userInput}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`
-  )
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-    })
-    .then(data => {
-      render(data);
-    })
-    .catch(error => console.log(error));
-}
+import axios from 'axios';
+const BASE_URL = 'https://pixabay.com/api';
+const KEY = '34434498-1935a5c1deda7e012c81c56f8';
+const DEF_OPTIONS = 'image_type=photo&orientation=horizontal&safesearch=true';
+
+export const fetchImages = async (userInput, render, page, hits) => {
+  return await axios
+    .get(
+      `${BASE_URL}/?key=${KEY}&q=${userInput}&${DEF_OPTIONS}&per_page=${hits}&page=${page}`
+    )
+    .then(({ data }) => render(data));
+};
