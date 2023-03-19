@@ -7,29 +7,46 @@ import { fetchImages } from './fetchImages';
 const HITS_PER_PAGE = 40;
 
 let userInput = '';
-let page = 1;
+let page = 0;
 let totalPages = HITS_PER_PAGE;
 let gallery = '';
+let totalHits = '';
 
 const refs = {
   form: document.getElementById('search-form'),
   gallery: document.querySelector('.gallery'),
   button: document.querySelector('.load-more'),
   text: document.querySelector('.end-list'),
+  topButton: document.getElementById('myBtn'),
 };
+
+refs.topButton.style.display = 'none';
+
+const onButtonIntersect = entities => {
+  const [button] = entities;
+  if (button.isIntersecting && totalPages < totalHits) {
+    loadMoreImgs();
+  }
+};
+
+const observer = new IntersectionObserver(onButtonIntersect);
 
 const renderText = () => {
   refs.text.innerHTML =
     "We're sorry, but you've reached the end of search results.";
+  refs.topButton.style.display = 'block';
 };
 
 const render = data => {
+  totalHits = data.totalHits;
   if (page === 1 && data.hits.length > 0) {
     Notify.success(`Hooray! We found ${data.totalHits} images.`);
   }
 
   if (totalPages >= data.totalHits && data.hits.length > 0) {
     renderText();
+  } else {
+    observer.observe(refs.button);
   }
   if (data.hits.length < 1) {
     return Notify.failure(
@@ -41,6 +58,8 @@ const render = data => {
   gallery = new SimpleLightbox('.gallery a');
 
   addScroll();
+
+  observer.observe(refs.button);
 };
 
 const loadMoreImgs = () => {
@@ -128,14 +147,11 @@ const fetchData = data => {
 
 refs.form.addEventListener('submit', handleSubmit);
 
-const onButtonIntersect = entities => {
-  const [button] = entities;
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+  refs.topButton.style.display = 'none';
+}
 
-  if (button.isIntersecting) {
-    loadMoreImgs();
-  }
-};
-
-const observer = new IntersectionObserver(onButtonIntersect);
-
-observer.observe(refs.button);
+refs.topButton.addEventListener('click', topFunction);
