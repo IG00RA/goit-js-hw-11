@@ -10,7 +10,7 @@ const observer = new IntersectionObserver(onButtonIntersect);
 
 let userInput = '';
 let page = 0;
-let totalPages = HITS_PER_PAGE;
+let totalPages = 0;
 let totalHits = '';
 
 const refs = {
@@ -23,12 +23,12 @@ const refs = {
 
 function onButtonIntersect(entities) {
   const [button] = entities;
-  if (button.isIntersecting && totalPages < totalHits) {
-    try {
-      loadMoreImgs();
-    } catch (error) {
-      Notify.failure(`${error.message}. Please try again.`);
-    }
+  if (
+    button.isIntersecting &&
+    totalPages < totalHits &&
+    refs.gallery.innerHTML
+  ) {
+    loadMoreImgs();
   }
 }
 
@@ -45,16 +45,17 @@ const handleData = ({ data }) => {
   }
   if (totalPages >= data.totalHits && data.hits.length > 0) {
     renderText();
-  } else {
-    observer.observe(refs.button);
   }
-  if (data.hits.length < 1) {
+  if (data.hits.length === 0) {
     return Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
   }
   renderGallery(data);
-  addScroll();
+  console.log(page);
+  if (page > 1) {
+    addScroll();
+  }
   gallery.refresh();
   observer.observe(refs.button);
 };
@@ -63,12 +64,17 @@ const loadMoreImgs = async () => {
   page += 1;
   totalPages += HITS_PER_PAGE;
   gallery.refresh();
-  const imageData = await fetchImages(userInput, page, HITS_PER_PAGE);
-  handleData(imageData);
+  try {
+    const imageData = await fetchImages(userInput, page, HITS_PER_PAGE);
+    handleData(imageData);
+  } catch (error) {
+    Notify.failure(`${error.message}. Please try again.`);
+  }
 };
 
-const handleSubmit = async e => {
+const handleSubmit = e => {
   e.preventDefault();
+  page = 0;
   totalPages = HITS_PER_PAGE;
   const { value } = e.target.elements.searchQuery;
   if (userInput === value.trim()) {
@@ -76,14 +82,8 @@ const handleSubmit = async e => {
   }
   userInput = value.trim();
   if (userInput.length > 0) {
-    page = 1;
     refs.gallery.innerHTML = '';
-    try {
-      const imageData = await fetchImages(userInput, page, HITS_PER_PAGE);
-      handleData(imageData);
-    } catch (error) {
-      Notify.failure(`${error.message}. Please try again.`);
-    }
+    loadMoreImgs();
   }
   if (userInput.length < 1) {
     Notify.failure('Oops, please enter your request');
