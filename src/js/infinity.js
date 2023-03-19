@@ -5,11 +5,12 @@ import '../css/styles.css';
 import { fetchImages } from './fetchImages';
 
 const HITS_PER_PAGE = 40;
+const gallery = new SimpleLightbox('.gallery a');
+const observer = new IntersectionObserver(onButtonIntersect);
 
 let userInput = '';
 let page = 0;
 let totalPages = HITS_PER_PAGE;
-let gallery = '';
 let totalHits = '';
 
 const refs = {
@@ -20,16 +21,16 @@ const refs = {
   topButton: document.getElementById('myBtn'),
 };
 
-refs.topButton.style.display = 'none';
-
-const onButtonIntersect = entities => {
+function onButtonIntersect(entities) {
   const [button] = entities;
   if (button.isIntersecting && totalPages < totalHits) {
-    loadMoreImgs();
+    try {
+      loadMoreImgs();
+    } catch (error) {
+      Notify.failure(`${error.message}. Please try again.`);
+    }
   }
-};
-
-const observer = new IntersectionObserver(onButtonIntersect);
+}
 
 const renderText = () => {
   refs.text.innerHTML =
@@ -37,12 +38,11 @@ const renderText = () => {
   refs.topButton.style.display = 'block';
 };
 
-const render = data => {
+const handleData = ({ data }) => {
   totalHits = data.totalHits;
   if (page === 1 && data.hits.length > 0) {
     Notify.success(`Hooray! We found ${data.totalHits} images.`);
   }
-
   if (totalPages >= data.totalHits && data.hits.length > 0) {
     renderText();
   } else {
@@ -53,23 +53,21 @@ const render = data => {
       'Sorry, there are no images matching your search query. Please try again.'
     );
   }
-  fetchData(data);
-
-  gallery = new SimpleLightbox('.gallery a');
-
+  renderGallery(data);
   addScroll();
-
+  gallery.refresh();
   observer.observe(refs.button);
 };
 
-const loadMoreImgs = () => {
+const loadMoreImgs = async () => {
   page += 1;
   totalPages += HITS_PER_PAGE;
   gallery.refresh();
-  fetchImages(userInput, render, page, HITS_PER_PAGE);
+  const imageData = await fetchImages(userInput, page, HITS_PER_PAGE);
+  handleData(imageData);
 };
 
-const handleSubmit = e => {
+const handleSubmit = async e => {
   e.preventDefault();
   totalPages = HITS_PER_PAGE;
   const { value } = e.target.elements.searchQuery;
@@ -80,7 +78,12 @@ const handleSubmit = e => {
   if (userInput.length > 0) {
     page = 1;
     refs.gallery.innerHTML = '';
-    fetchImages(userInput, render, page, HITS_PER_PAGE);
+    try {
+      const imageData = await fetchImages(userInput, page, HITS_PER_PAGE);
+      handleData(imageData);
+    } catch (error) {
+      Notify.failure(`${error.message}. Please try again.`);
+    }
   }
   if (userInput.length < 1) {
     Notify.failure('Oops, please enter your request');
@@ -94,7 +97,6 @@ const addScroll = () => {
     const { height: cardHeight } = document
       .querySelector('.gallery')
       .firstElementChild.getBoundingClientRect();
-
     window.scrollBy({
       top: cardHeight * 3,
       behavior: 'smooth',
@@ -102,7 +104,7 @@ const addScroll = () => {
   }
 };
 
-const fetchData = data => {
+const renderGallery = data => {
   const item = data.hits
     .map(
       ({
@@ -145,12 +147,12 @@ const fetchData = data => {
   refs.gallery.insertAdjacentHTML('beforeend', item);
 };
 
-refs.form.addEventListener('submit', handleSubmit);
-
-function topFunction() {
+const topFunction = () => {
   document.body.scrollTop = 0; // For Safari
   document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
   refs.topButton.style.display = 'none';
-}
+};
 
+refs.topButton.style.display = 'none';
+refs.form.addEventListener('submit', handleSubmit);
 refs.topButton.addEventListener('click', topFunction);

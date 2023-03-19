@@ -166,7 +166,7 @@ button {
   width: 240px;
 }
 .SearchBox-input {
-  width: 0;
+  width: 170px;
   font-size: 1.2em;
   color: #fff;
   transition: 0.45s;
