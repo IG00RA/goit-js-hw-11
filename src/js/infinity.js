@@ -52,7 +52,6 @@ const handleData = ({ data }) => {
     );
   }
   renderGallery(data);
-  console.log(page);
   if (page > 1) {
     addScroll();
   }
@@ -88,6 +87,7 @@ const handleSubmit = e => {
   if (userInput.length < 1) {
     Notify.failure('Oops, please enter your request');
   }
+  refs.topButton.style.display = 'none';
   refs.text.innerHTML = '';
   refs.form.reset();
 };
