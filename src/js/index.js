@@ -1,2 +1,2 @@
 // import './js/load-more';
-import './js/infinity';
+import './infinity';
