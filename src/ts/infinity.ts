@@ -4,21 +4,30 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import '../css/styles.css';
 import { fetchImages } from './fetchImages';
 
-const HITS_PER_PAGE = 40;
-const gallery = new SimpleLightbox('.gallery a');
+const HITS_PER_PAGE: number = 40;
+const gallery: SimpleLightbox = new SimpleLightbox('.gallery a');
+
 const observer = new IntersectionObserver(onButtonIntersect);
 
-let userInput = '';
-let page = 0;
-let totalPages = 0;
-let totalHits = '';
+let userInput: string = '';
+let page: number = 0;
+let totalPages: number = 0;
+let totalHits: string = '';
 
-const refs = {
-  form: document.getElementById('search-form'),
+interface Refs {
+  form: HTMLFormElement | null;
+  gallery: HTMLDivElement | null;
+  button: HTMLButtonElement | null;
+  text: HTMLParagraphElement | null;
+  topButton: HTMLButtonElement | null;
+}
+
+const refs: Refs = {
+  form: document.getElementById('search-form') as HTMLFormElement,
   gallery: document.querySelector('.gallery'),
   button: document.querySelector('.load-more'),
   text: document.querySelector('.end-list'),
-  topButton: document.getElementById('myBtn'),
+  topButton: document.getElementById('myBtn') as HTMLButtonElement,
 };
 
 function onButtonIntersect(entities) {
