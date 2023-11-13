@@ -12,7 +12,38 @@ const observer = new IntersectionObserver(onButtonIntersect);
 let userInput: string = '';
 let page: number = 0;
 let totalPages: number = 0;
-let totalHits: string = '';
+let totalHits: number = 0;
+
+interface PixabayImage {
+  id: number;
+  pageURL: string;
+  type: string;
+  tags: string;
+  previewURL: string;
+  previewWidth: number;
+  previewHeight: number;
+  webformatURL: string;
+  webformatWidth: number;
+  webformatHeight: number;
+  largeImageURL: string;
+  imageWidth: number;
+  imageHeight: number;
+  imageSize: number;
+  views: number;
+  downloads: number;
+  collections: number;
+  likes: number;
+  comments: number;
+  user_id: number;
+  user: string;
+  userImageURL: string;
+}
+
+interface PixabayResponse {
+  total: number;
+  totalHits: number;
+  hits: PixabayImage[];
+}
 
 interface Refs {
   form: HTMLFormElement | null;
@@ -22,6 +53,8 @@ interface Refs {
   topButton: HTMLButtonElement | null;
 }
 
+interface MyIntersectionObserverEntry extends IntersectionObserverEntry {}
+
 const refs: Refs = {
   form: document.getElementById('search-form') as HTMLFormElement,
   gallery: document.querySelector('.gallery'),
@@ -30,24 +63,26 @@ const refs: Refs = {
   topButton: document.getElementById('myBtn') as HTMLButtonElement,
 };
 
-function onButtonIntersect(entities) {
-  const [button] = entities;
+function onButtonIntersect(entities: MyIntersectionObserverEntry[]): void {
   if (
-    button.isIntersecting &&
+    entities.length > 0 &&
+    entities[0].isIntersecting &&
     totalPages < totalHits &&
+    refs.gallery &&
     refs.gallery.innerHTML
   ) {
     loadMoreImgs();
   }
 }
 
-const renderText = () => {
-  refs.text.innerHTML =
-    "We're sorry, but you've reached the end of search results.";
-  refs.topButton.style.display = 'block';
+const renderText = (): void => {
+  refs.text &&
+    (refs.text.innerHTML =
+      "We're sorry, but you've reached the end of search results.");
+  refs.topButton && (refs.topButton.style.display = 'block');
 };
 
-const handleData = ({ data }) => {
+const handleData = ({ data }: { data: PixabayResponse }): void => {
   totalHits = data.totalHits;
   if (page === 1 && data.hits.length > 0) {
     Notify.success(`Hooray! We found ${data.totalHits} images.`);
@@ -65,7 +100,7 @@ const handleData = ({ data }) => {
     addScroll();
   }
   gallery.refresh();
-  observer.observe(refs.button);
+  refs.button && observer.observe(refs.button);
 };
 
 const loadMoreImgs = async () => {

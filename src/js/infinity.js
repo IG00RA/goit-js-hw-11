@@ -9,7 +9,7 @@ const observer = new IntersectionObserver(onButtonIntersect);
 let userInput = '';
 let page = 0;
 let totalPages = 0;
-let totalHits = '';
+let totalHits = 0;
 const refs = {
     form: document.getElementById('search-form'),
     gallery: document.querySelector('.gallery'),
@@ -18,17 +18,19 @@ const refs = {
     topButton: document.getElementById('myBtn'),
 };
 function onButtonIntersect(entities) {
-    const [button] = entities;
-    if (button.isIntersecting &&
+    if (entities.length > 0 &&
+        entities[0].isIntersecting &&
         totalPages < totalHits &&
+        refs.gallery &&
         refs.gallery.innerHTML) {
         loadMoreImgs();
     }
 }
 const renderText = () => {
-    refs.text.innerHTML =
-        "We're sorry, but you've reached the end of search results.";
-    refs.topButton.style.display = 'block';
+    refs.text &&
+        (refs.text.innerHTML =
+            "We're sorry, but you've reached the end of search results.");
+    refs.topButton && (refs.topButton.style.display = 'block');
 };
 const handleData = ({ data }) => {
     totalHits = data.totalHits;
@@ -46,7 +48,7 @@ const handleData = ({ data }) => {
         addScroll();
     }
     gallery.refresh();
-    observer.observe(refs.button);
+    refs.button && observer.observe(refs.button);
 };
 const loadMoreImgs = async () => {
     page += 1;
