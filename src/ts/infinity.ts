@@ -103,7 +103,7 @@ const handleData = ({ data }: { data: PixabayResponse }): void => {
   refs.button && observer.observe(refs.button);
 };
 
-const loadMoreImgs = async () => {
+const loadMoreImgs = async (): Promise<void> => {
   page += 1;
   totalPages += HITS_PER_PAGE;
   gallery.refresh();
@@ -115,25 +115,27 @@ const loadMoreImgs = async () => {
   }
 };
 
-const handleSubmit = e => {
+const handleSubmit = (e: Event): void => {
   e.preventDefault();
   page = 0;
   totalPages = HITS_PER_PAGE;
-  const { value } = e.target.elements.searchQuery;
+  const { value } = (e.target as HTMLFormElement).elements.namedItem(
+    'searchQuery'
+  ) as HTMLInputElement;
   if (userInput === value.trim()) {
     return;
   }
   userInput = value.trim();
   if (userInput.length > 0) {
-    refs.gallery.innerHTML = '';
+    refs.gallery && (refs.gallery.innerHTML = '');
     loadMoreImgs();
   }
   if (userInput.length < 1) {
     Notify.failure('Oops, please enter your request');
   }
-  refs.topButton.style.display = 'none';
-  refs.text.innerHTML = '';
-  refs.form.reset();
+  refs.topButton && (refs.topButton.style.display = 'none');
+  refs.text && (refs.text.innerHTML = '');
+  refs.form?.reset();
 };
 
 const addScroll = () => {

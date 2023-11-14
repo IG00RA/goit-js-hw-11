@@ -62,25 +62,26 @@ const loadMoreImgs = async () => {
         Notify.failure(`${error.message}. Please try again.`);
     }
 };
-const handleSubmit = e => {
+const handleSubmit = (e) => {
+    var _a;
     e.preventDefault();
     page = 0;
     totalPages = HITS_PER_PAGE;
-    const { value } = e.target.elements.searchQuery;
+    const { value } = e.target.elements.namedItem('searchQuery');
     if (userInput === value.trim()) {
         return;
     }
     userInput = value.trim();
     if (userInput.length > 0) {
-        refs.gallery.innerHTML = '';
+        refs.gallery && (refs.gallery.innerHTML = '');
         loadMoreImgs();
     }
     if (userInput.length < 1) {
         Notify.failure('Oops, please enter your request');
     }
-    refs.topButton.style.display = 'none';
-    refs.text.innerHTML = '';
-    refs.form.reset();
+    refs.topButton && (refs.topButton.style.display = 'none');
+    refs.text && (refs.text.innerHTML = '');
+    (_a = refs.form) === null || _a === void 0 ? void 0 : _a.reset();
 };
 const addScroll = () => {
     if (page > 1) {
