@@ -84,10 +84,9 @@ const handleSubmit = (e) => {
     (_a = refs.form) === null || _a === void 0 ? void 0 : _a.reset();
 };
 const addScroll = () => {
-    if (page > 1) {
-        const { height: cardHeight } = document
-            .querySelector('.gallery')
-            .firstElementChild.getBoundingClientRect();
+    var _a;
+    if (page > 1 && refs.gallery && refs.gallery.firstElementChild) {
+        const { height: cardHeight } = (_a = refs.gallery.firstElementChild) === null || _a === void 0 ? void 0 : _a.getBoundingClientRect();
         window.scrollBy({
             top: cardHeight * 3,
             behavior: 'smooth',

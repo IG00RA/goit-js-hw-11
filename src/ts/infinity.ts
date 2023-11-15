@@ -138,11 +138,10 @@ const handleSubmit = (e: Event): void => {
   refs.form?.reset();
 };
 
-const addScroll = () => {
-  if (page > 1) {
-    const { height: cardHeight } = document
-      .querySelector('.gallery')
-      .firstElementChild.getBoundingClientRect();
+const addScroll = (): void => {
+  if (page > 1 && refs.gallery && refs.gallery.firstElementChild) {
+    const { height: cardHeight } =
+      refs.gallery.firstElementChild?.getBoundingClientRect();
     window.scrollBy({
       top: cardHeight * 3,
       behavior: 'smooth',
