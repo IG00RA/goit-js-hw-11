@@ -133,7 +133,7 @@ const handleSubmit = (e: Event): void => {
   if (userInput.length < 1) {
     Notify.failure('Oops, please enter your request');
   }
-  refs.topButton && (refs.topButton.style.display = 'none');
+  refs.topButton && (refs.topButton.style.display = 'block');
   refs.text && (refs.text.innerHTML = '');
   refs.form?.reset();
 };
@@ -149,7 +149,7 @@ const addScroll = (): void => {
   }
 };
 
-const renderGallery = data => {
+const renderGallery = (data: PixabayResponse): void => {
   const item = data.hits
     .map(
       ({
@@ -189,15 +189,15 @@ const renderGallery = data => {
                   `
     )
     .join('');
-  refs.gallery.insertAdjacentHTML('beforeend', item);
+  refs.gallery?.insertAdjacentHTML('beforeend', item);
 };
 
 const topFunction = () => {
-  document.body.scrollTop = 0; // For Safari
-  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-  refs.topButton.style.display = 'none';
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  refs.topButton && (refs.topButton.style.display = 'none');
 };
 
-refs.topButton.style.display = 'none';
-refs.form.addEventListener('submit', handleSubmit);
-refs.topButton.addEventListener('click', topFunction);
+refs.topButton && (refs.topButton.style.display = 'none');
+refs.form?.addEventListener('submit', handleSubmit);
+refs.topButton?.addEventListener('click', topFunction);

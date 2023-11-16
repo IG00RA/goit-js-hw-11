@@ -1,3 +1,4 @@
+var _a, _b;
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import SimpleLightbox from 'simplelightbox';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
@@ -79,7 +80,7 @@ const handleSubmit = (e) => {
     if (userInput.length < 1) {
         Notify.failure('Oops, please enter your request');
     }
-    refs.topButton && (refs.topButton.style.display = 'none');
+    refs.topButton && (refs.topButton.style.display = 'block');
     refs.text && (refs.text.innerHTML = '');
     (_a = refs.form) === null || _a === void 0 ? void 0 : _a.reset();
 };
@@ -93,7 +94,8 @@ const addScroll = () => {
         });
     }
 };
-const renderGallery = data => {
+const renderGallery = (data) => {
+    var _a;
     const item = data.hits
         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads, }) => `<div class="wrap">
          <div class="photo-card">
@@ -122,13 +124,13 @@ const renderGallery = data => {
   </div>
                   `)
         .join('');
-    refs.gallery.insertAdjacentHTML('beforeend', item);
+    (_a = refs.gallery) === null || _a === void 0 ? void 0 : _a.insertAdjacentHTML('beforeend', item);
 };
 const topFunction = () => {
-    document.body.scrollTop = 0; // For Safari
-    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-    refs.topButton.style.display = 'none';
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    refs.topButton && (refs.topButton.style.display = 'none');
 };
-refs.topButton.style.display = 'none';
-refs.form.addEventListener('submit', handleSubmit);
-refs.topButton.addEventListener('click', topFunction);
+refs.topButton && (refs.topButton.style.display = 'none');
+(_a = refs.form) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', handleSubmit);
+(_b = refs.topButton) === null || _b === void 0 ? void 0 : _b.addEventListener('click', topFunction);
