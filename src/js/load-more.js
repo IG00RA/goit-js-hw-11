@@ -1,3 +1,4 @@
+var _a, _b, _c;
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import SimpleLightbox from 'simplelightbox';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
@@ -9,7 +10,7 @@ const gallery = new SimpleLightbox('.gallery a');
 let userInput = '';
 let page = 0;
 let totalPages = 0;
-let totalHits = '';
+let totalHits = 0;
 const refs = {
     form: document.getElementById('search-form'),
     gallery: document.querySelector('.gallery'),
@@ -18,14 +19,16 @@ const refs = {
     topButton: document.getElementById('myBtn'),
 };
 const renderText = () => {
-    refs.text.innerHTML =
-        "We're sorry, but you've reached the end of search results.";
-    refs.topButton.style.display = 'block';
-    refs.button.classList.add('hidden');
+    refs.text &&
+        (refs.text.innerHTML =
+            "We're sorry, but you've reached the end of search results.");
+    refs.topButton && (refs.topButton.style.display = 'block');
+    refs.button && refs.button.classList.add('hidden');
 };
-const handleData = ({ data }) => {
+const handleData = (data) => {
+    var _a;
     totalHits = data.totalHits;
-    refs.button.classList.remove('hidden');
+    (_a = refs.button) === null || _a === void 0 ? void 0 : _a.classList.remove('hidden');
     if (page === 1 && data.hits.length > 0) {
         Notify.success(`Hooray! We found ${data.totalHits} images.`);
     }
@@ -53,32 +56,32 @@ const loadMoreImgs = async () => {
         Notify.failure(`${error.message}. Please try again.`);
     }
 };
-const handleSubmit = e => {
+const handleSubmit = (e) => {
+    var _a, _b;
     e.preventDefault();
     page = 0;
     totalPages = HITS_PER_PAGE;
-    refs.button.classList.add('hidden');
-    const { value } = e.target.elements.searchQuery;
+    (_a = refs.button) === null || _a === void 0 ? void 0 : _a.classList.add('hidden');
+    const formEvent = e.target;
+    const { value } = formEvent === null || formEvent === void 0 ? void 0 : formEvent.elements['searchQuery'];
     if (userInput === value.trim()) {
         return;
     }
     userInput = value.trim();
-    if (userInput.length > 0) {
+    if (userInput.length > 0 && refs.gallery) {
         refs.gallery.innerHTML = '';
         loadMoreImgs();
     }
     if (userInput.length < 1) {
         Notify.failure('Oops, please enter your request');
     }
-    refs.topButton.style.display = 'none';
-    refs.text.innerHTML = '';
-    refs.form.reset();
+    refs.topButton && (refs.topButton.style.display = 'none');
+    refs.text && (refs.text.innerHTML = '');
+    (_b = refs.form) === null || _b === void 0 ? void 0 : _b.reset();
 };
 const addScroll = () => {
-    if (page > 1) {
-        const { height: cardHeight } = document
-            .querySelector('.gallery')
-            .firstElementChild.getBoundingClientRect();
+    if (page > 1 && refs.gallery && refs.gallery.firstElementChild) {
+        const { height: cardHeight } = refs.gallery.firstElementChild.getBoundingClientRect();
         window.scrollBy({
             top: cardHeight * 3,
             behavior: 'smooth',
@@ -86,6 +89,7 @@ const addScroll = () => {
     }
 };
 const renderGallery = data => {
+    var _a;
     const item = data.hits
         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads, }) => `<div class="wrap">
          <div class="photo-card">
@@ -114,14 +118,14 @@ const renderGallery = data => {
   </div>
                   `)
         .join('');
-    refs.gallery.insertAdjacentHTML('beforeend', item);
+    (_a = refs.gallery) === null || _a === void 0 ? void 0 : _a.insertAdjacentHTML('beforeend', item);
 };
 const topFunction = () => {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-    refs.topButton.style.display = 'none';
+    refs.topButton && (refs.topButton.style.display = 'none');
 };
-refs.topButton.style.display = 'none';
-refs.form.addEventListener('submit', handleSubmit);
-refs.topButton.addEventListener('click', topFunction);
-refs.button.addEventListener('click', debounce(loadMoreImgs, 500));
+refs.topButton && (refs.topButton.style.display = 'none');
+(_a = refs.form) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', handleSubmit);
+(_b = refs.topButton) === null || _b === void 0 ? void 0 : _b.addEventListener('click', topFunction);
+(_c = refs.button) === null || _c === void 0 ? void 0 : _c.addEventListener('click', debounce(loadMoreImgs, 500));

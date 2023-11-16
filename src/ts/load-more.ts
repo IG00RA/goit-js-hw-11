@@ -4,33 +4,35 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import '../css/styles.css';
 import { fetchImages } from './fetchImages';
 import { debounce } from 'debounce';
+import { PixabayResponse, Refs } from './infinity';
 
 const HITS_PER_PAGE = 40;
-const gallery = new SimpleLightbox('.gallery a');
+const gallery: SimpleLightbox = new SimpleLightbox('.gallery a');
 
 let userInput = '';
 let page = 0;
 let totalPages = 0;
-let totalHits = '';
+let totalHits = 0;
 
-const refs = {
-  form: document.getElementById('search-form'),
+const refs: Refs = {
+  form: document.getElementById('search-form') as HTMLFormElement,
   gallery: document.querySelector('.gallery'),
   button: document.querySelector('.load-more'),
   text: document.querySelector('.end-list'),
-  topButton: document.getElementById('myBtn'),
+  topButton: document.getElementById('myBtn') as HTMLButtonElement,
 };
 
 const renderText = () => {
-  refs.text.innerHTML =
-    "We're sorry, but you've reached the end of search results.";
-  refs.topButton.style.display = 'block';
-  refs.button.classList.add('hidden');
+  refs.text &&
+    (refs.text.innerHTML =
+      "We're sorry, but you've reached the end of search results.");
+  refs.topButton && (refs.topButton.style.display = 'block');
+  refs.button && refs.button.classList.add('hidden');
 };
 
-const handleData = ({ data }) => {
+const handleData = (data: PixabayResponse): void => {
   totalHits = data.totalHits;
-  refs.button.classList.remove('hidden');
+  refs.button?.classList.remove('hidden');
   if (page === 1 && data.hits.length > 0) {
     Notify.success(`Hooray! We found ${data.totalHits} images.`);
   }
@@ -62,33 +64,33 @@ const loadMoreImgs = async () => {
   }
 };
 
-const handleSubmit = e => {
+const handleSubmit = (e: Event) => {
   e.preventDefault();
   page = 0;
   totalPages = HITS_PER_PAGE;
-  refs.button.classList.add('hidden');
-  const { value } = e.target.elements.searchQuery;
+  refs.button?.classList.add('hidden');
+  const formEvent = e.target as HTMLFormElement;
+  const { value } = formEvent?.elements['searchQuery'] as HTMLInputElement;
   if (userInput === value.trim()) {
     return;
   }
   userInput = value.trim();
-  if (userInput.length > 0) {
+  if (userInput.length > 0 && refs.gallery) {
     refs.gallery.innerHTML = '';
     loadMoreImgs();
   }
   if (userInput.length < 1) {
     Notify.failure('Oops, please enter your request');
   }
-  refs.topButton.style.display = 'none';
-  refs.text.innerHTML = '';
-  refs.form.reset();
+  refs.topButton && (refs.topButton.style.display = 'none');
+  refs.text && (refs.text.innerHTML = '');
+  refs.form?.reset();
 };
 
 const addScroll = () => {
-  if (page > 1) {
-    const { height: cardHeight } = document
-      .querySelector('.gallery')
-      .firstElementChild.getBoundingClientRect();
+  if (page > 1 && refs.gallery && refs.gallery.firstElementChild) {
+    const { height: cardHeight } =
+      refs.gallery.firstElementChild.getBoundingClientRect();
     window.scrollBy({
       top: cardHeight * 3,
       behavior: 'smooth',
@@ -136,16 +138,16 @@ const renderGallery = data => {
                   `
     )
     .join('');
-  refs.gallery.insertAdjacentHTML('beforeend', item);
+  refs.gallery?.insertAdjacentHTML('beforeend', item);
 };
 
 const topFunction = () => {
   document.body.scrollTop = 0; // For Safari
   document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-  refs.topButton.style.display = 'none';
+  refs.topButton && (refs.topButton.style.display = 'none');
 };
 
-refs.topButton.style.display = 'none';
-refs.form.addEventListener('submit', handleSubmit);
-refs.topButton.addEventListener('click', topFunction);
-refs.button.addEventListener('click', debounce(loadMoreImgs, 500));
+refs.topButton && (refs.topButton.style.display = 'none');
+refs.form?.addEventListener('submit', handleSubmit);
+refs.topButton?.addEventListener('click', topFunction);
+refs.button?.addEventListener('click', debounce(loadMoreImgs, 500));

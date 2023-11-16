@@ -45,7 +45,7 @@ export interface PixabayResponse {
   hits: PixabayImage[];
 }
 
-interface Refs {
+export interface Refs {
   form: HTMLFormElement | null;
   gallery: HTMLDivElement | null;
   button: HTMLButtonElement | null;
