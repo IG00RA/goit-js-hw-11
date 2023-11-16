@@ -33,7 +33,7 @@ const renderText = () => {
             "We're sorry, but you've reached the end of search results.");
     refs.topButton && (refs.topButton.style.display = 'block');
 };
-const handleData = ({ data }) => {
+const handleData = (data) => {
     totalHits = data.totalHits;
     if (page === 1 && data.hits.length > 0) {
         Notify.success(`Hooray! We found ${data.totalHits} images.`);

@@ -39,7 +39,7 @@ interface PixabayImage {
   userImageURL: string;
 }
 
-interface PixabayResponse {
+export interface PixabayResponse {
   total: number;
   totalHits: number;
   hits: PixabayImage[];
@@ -82,7 +82,7 @@ const renderText = (): void => {
   refs.topButton && (refs.topButton.style.display = 'block');
 };
 
-const handleData = ({ data }: { data: PixabayResponse }): void => {
+const handleData = (data: PixabayResponse): void => {
   totalHits = data.totalHits;
   if (page === 1 && data.hits.length > 0) {
     Notify.success(`Hooray! We found ${data.totalHits} images.`);
@@ -149,7 +149,7 @@ const addScroll = (): void => {
   }
 };
 
-const renderGallery = (data: PixabayResponse): void => {
+const renderGallery = (data): void => {
   const item = data.hits
     .map(
       ({
